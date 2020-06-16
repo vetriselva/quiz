@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+    {%block title%}
+        {{title}}
+    {%endblock%}
+    {%block contend%}
+    <div class="container">
+        <center>
+             <div class="card" style="width: 50%">
+            <div class="card-body">
+              <center><h5>Quiz title</h5></center>&nbsp;
+            <!-- {{user}} -->
+            <div class="row">
+                <div class="col-md-3"> <a href="/quiz/21/" class="btn btn-primary">Sports</a></div>&nbsp&nbsp
+                <div class="col-md-5"> <a href="/quiz/9/" class="btn btn-primary">General Knowledge</a></div>&nbsp&nbsp
+                <div class="col-md-3"> <a href="/quiz/18/" class="btn btn-primary">Computer</a></div>
+            </div>
+             
+            </div>
+          </div>
+        </center>
+       
+    </div>
+       
+    {%endblock%}

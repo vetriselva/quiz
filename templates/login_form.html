@@ -1,0 +1,67 @@
+
+{% extends "base.html" %}
+{% load static %}
+    {%block title%}
+        {{title}}
+    {%endblock%}
+    {%block contend%}
+        <form action='/login/' method="POST">{% csrf_token %}
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3">
+
+                    </div>
+                    <div class="col-md-6 alert-danger">
+                        
+                            {% if error %}
+                            <strong>{{ error }}</strong>
+                            {% endif %}
+                     
+                        
+                    </div>
+                    <div class="col-md-3">
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-6 alert-success">
+                        {% if messages %}
+                        <ul class="messages" style="list-style-type: none;">
+                            {% for message in messages %}
+                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-3"></div>
+                
+                </div>
+                    {% for field in form %}
+
+                <div class="fieldWrapper">
+                  
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6" >
+                        {{ field.label_tag }}
+                        {{ field }}
+                        </div>
+                        <div class="col-md-3"></div>
+                    
+                    </div>
+                </div>
+                    {% endfor %}
+                    &nbsp;
+                <div class="row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-6" >
+                        <input type="submit" value="Login" class="btn btn-primary">
+                    </div>
+                    
+                </div>
+            
+            </div>
+        </form>
+    {%endblock%}
+    

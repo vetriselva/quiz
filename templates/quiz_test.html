@@ -1,0 +1,185 @@
+
+{% extends "base.html" %}
+{% load static %}
+    {%block title%}
+        {{title}}
+    {%endblock%}
+    {%block contend%}
+ 
+    <div class="container">
+        <center>
+            <div class="card" style="width: 50%">
+            
+                <div class="card-body">
+                    Test
+                    <div id="outoff">
+
+                    </div>
+                </div>
+                    <div id="timer"></div>
+                    <p id="please_wait">Please Wait ...</p>
+                    <div id="question"></div>
+                    <div id="answere"></div>
+                    <button id="next_button"onclick="next()">next</button>
+                
+            </div>
+        </center>
+
+        
+    </div>
+   
+    
+    {%endblock%}
+
+
+{% block script %}
+<script>
+showApi()
+var next_question = 0;
+var is_not_clecked = false;
+let questions= '';
+let correct_answer= 0;
+var msec = 00;
+var sec = 00;
+var min = 00;
+var time;
+var csrftoken = getCookie('csrftoken');
+var all_submitted= true; 
+const ques = document.getElementById('question');
+const ans = document.getElementById('answere');
+const outoff = document.getElementById('outoff');
+
+var answer_clicked = true;
+function next(){
+    document.getElementById("next_button").disabled = true;
+    let random = Math.floor(Math.random() * 3);
+    answer_clicked = true;
+    if (is_not_clecked){
+        next_question += 1;
+    }
+    ans.innerHTML = '';
+        for(var i =0; i<=questions.length; i++){
+            if (i == next_question){
+                if(all_submitted){
+                    outoff.innerHTML = (i+1)+'/'+questions.length;
+                    ques.innerHTML = '<span>'+questions[i].question+'</span></br>';
+                    for(inc_ans =0; inc_ans< questions[i].incorrect_answers.length; inc_ans++){
+                        if (inc_ans == random){
+                            ans.innerHTML += '<button id="'+questions[i].correct_answer +'" onclick="checkAnswer(\'' + questions[i].correct_answer + ','+questions[i].correct_answer+'\')"class="btn btn-info form-control">'+questions[i].correct_answer+'</button><br>&nbsp';
+                        }
+                            ans.innerHTML += '<button id="'+ questions[i].incorrect_answers[inc_ans]+'"onclick="checkAnswer(\'' + questions[i].incorrect_answers[inc_ans]+ ','+questions[i].correct_answer+'\')"class="btn btn-info  form-control">'+questions[i].incorrect_answers[inc_ans]+'</button><br>&nbsp';
+                    }
+                    if(i == 9){
+                        
+                        all_submitted = false;
+                    }
+                }else{
+                    ans.innerHTML = '';
+                    ques.innerHTML = '';
+                    ans.innerHTML += '<p>Thanks for participating</p>';
+                    ans.innerHTML += '<p>Correct Answer :'+correct_answer+'</p>';
+                    ans.innerHTML += '<p>Status :'+((correct_answer>4?'Pass' : 'Fail' ))+'</p>';
+                    result(correct_answer)
+                    stopCount()
+                }   
+            }
+        }
+    is_not_clecked = true;
+}
+
+function showApi(){
+    const please_wait = document.getElementById('please_wait');
+    const url ='https://opentdb.com/api.php?amount=10&category={{category}}&type=multiple';
+    fetch(url)
+    .then((resp) => resp.json())
+    .then(function(data) {
+     questions = data.results;
+     please_wait.style = 'display:none';
+     time = setInterval(clock, 1000);
+        next()
+    // console.log(questions)
+    })
+    .then(res=>{
+        console.log(res);
+    })
+}
+
+
+function checkAnswer(value){
+    console.log('answer'+value);
+    answer = value.split(',');
+    if (answer_clicked){
+        if(answer[0] == answer[1]){
+        answerid = document.getElementById(answer[0])
+        if (answerid != null){
+            answerid.style = 'color:white; background-color:green';
+            correct_answer +=1;
+            console.log((answer[0]));
+        
+        }
+        
+        }else{
+            answerid = document.getElementById(answer[0])
+            answerid2 = document.getElementById(answer[1]);
+            if (answerid != null || answerid2 != null){
+                      
+                answerid.style = 'color:white; background-color:red';
+
+                answerid2.style = 'color:white; background-color:green';
+        
+        }
+  
+        }
+    }
+    answer_clicked = false;
+    document.getElementById("next_button").disabled = false;
+}
+
+function result(correct_answer){
+    let data = new FormData();
+    data.append('result', correct_answer);
+    data.append('csrfmiddlewaretoken', csrftoken);
+    fetch("/result/", {
+        method: 'POST',
+        body: data
+    })    
+}
+
+function stopCount() {
+  clearTimeout(time);
+}
+function clock() {
+	msec += 1;
+	if (msec == 60) {
+		sec += 1;
+		msec = 00;
+		if (sec == 60) {
+			sec = 00;
+			min += 1;
+			if (sec % 2 == 0) {
+				alert("Pair");
+			}
+		}
+	}
+	document.getElementById("timer").innerHTML = min + ":" + sec + ":" + msec;
+}
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+</script>
+  
+{% endblock%}
